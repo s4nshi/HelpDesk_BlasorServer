@@ -1,0 +1,52 @@
+﻿@inject IJSRuntime js
+@inject NavigationManager NavigationManager
+
+<div class="page-background-class">
+
+
+<PageTitle>HelpDesk</PageTitle>
+
+    <h1>Система обработки заявок в поддержку на предприятии ПАО ЧМК</h1>
+    <div class="header2">Номер обращения к программистам, если возникли трудности: 4-16-52</div>
+<div class="accordion-body">
+    <style>
+        body {
+        background-image: url('/images/mechel.png');
+        background-size: 100%;
+        background-position: center; /* Выравнивание изображения вверху справа */
+        background-repeat: no-repeat;
+        }
+     </style>
+</div>
+</div>
+<div>
+<button class="btn btn-primary" @onclick="GoToHomePage"><div class="header2">Перейти к заявкам</div></button>
+</div>
+<div>
+.
+</div>
+<div>
+<button class="btn btn-primary" @onclick="GoToHomePage2"><div class="header2">Создать заявку</div></button>
+</div
+<div>
+.
+</div>
+<div>
+<button class="btn btn-primary" @onclick="GoToHomePage3"><div class="header2">Список телефонов</div></button>
+</div>
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationState { get; set; }
+    private void GoToHomePage()
+    {
+        NavigationManager.NavigateTo("/requs");
+    }
+    private void GoToHomePage2()
+    {
+        NavigationManager.NavigateTo("/addreq");
+    }
+        private void GoToHomePage3()
+    {
+        NavigationManager.NavigateTo("/phones");
+    }
+}

@@ -1,0 +1,254 @@
+﻿@page "/arh"
+@using HelpDesk.Models
+@inject NavigationManager NavigationManager
+@attribute [Authorize(Roles = "Administrator")]
+
+<h1>Архив</h1>
+
+<AuthorizeView>
+    <Authorized>
+
+<table id="myTable3" class="table">
+    <thead>
+        <tr>
+            <th class="header">№</th>
+            <th class="header">Тип</th>
+            <th class="header">Приоритет</th>
+            <th class="header">Статус</th>
+            <th class="header">ФИО отправителя</th>
+            <th class="header">Телефон</th>
+            <th class="header">Расположение</th>
+            <th class="header">Выполняющий заявку</th>
+            <th class="header">Дата</th>
+            <th class="header">Описание проблемы</th>
+            <th class="header">Вернуть</th>
+            <th class="header">Удалить</th>
+        </tr>
+    </thead>
+    <tbody>
+                @foreach (var hss in hesr.Where(hss =>
+        (string.IsNullOrEmpty(comment) || hss.Comment.Contains(comment)) &&
+                (string.IsNullOrEmpty(selectedPriority) || GetPriorityId(selectedPriority) == hss.IdPrior) &&
+                (string.IsNullOrEmpty(selectedStatus) || statuses.FirstOrDefault(s => s.IdSt == hss.IdStatus)?.Name == selectedStatus)
+        ))
+        {
+            string priorityColor = "";
+                    switch (hss.IdPrior)
+            {
+                case 1:
+                    priorityColor = "green";
+                    break;
+                case 2:
+                    priorityColor = "orange";
+                    break;
+                case 3:
+                    priorityColor = "red";
+                    break;
+            }
+                    <tr>
+
+                        <td class="cell">@hss.IdHs</td>
+                        <td class="cell">@GetTypeName(hss.IdTypeReq)</td>
+                        <td style="background-color: @priorityColor;" class="cell">
+                            <select style="background-color: @priorityColor;" @onchange="@(e => UpdatePriority(hss, e.Value.ToString()))">
+                                @foreach (var priority in priorities)
+                                {
+                                    <option value="@priority.IdPr" selected="@(hss.IdPrior == priority.IdPr ? "selected" : null)">@priority.Name</option>
+                                }
+                            </select>
+                        </td>
+                        <td class="cell">@GetStatusName(hss.IdStatus)</td>
+                        <td class="cell">@GetUserName(hss.IdUser)</td>
+                        <td class="cell">@GetUserPhone(hss.IdUser)</td>
+                        <td class="cell">@GetUserLocation(hss.IdUser)</td>
+                        <td class="cell">
+                            <select @onchange="@(e => UpdateSup(hss, e.Value.ToString()))">
+                                @foreach (var supe in supl)
+                                {
+                                    <option value="@supe.IdSup" selected="@(hss.IdSupe == supe.IdSup ? "selected" : null)">@supe.Login</option>
+                                }
+                            </select>
+                        </td>
+                        @if (hss.Datee.HasValue)
+                        {
+                            <td class="cell">@hss.Datee.Value.ToString("dd:MM:yyyy")</td>
+                        }
+                        else
+                        {
+                            <td class="cell">Без даты</td>
+                        }
+                        <td class="cell">@hss.Comment</td>
+                        <td>
+                            @for (int i = 0; i < hesr.Count; i++)
+                            {
+                                var request = hesr[i];
+                            }
+                            <button class="btn btn-primary" @onclick="() => MoveRequestToHistoryOnClick(hss)">Вернуть</button>
+                        </td>
+                <td>
+                            <button class="btn btn-primary" @onclick="() => DeleteRequest(hss)">Удалить</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+        @code {
+            Models.HelpDeskContext db = new Models.HelpDeskContext();
+        private List<Models.Requrst> requrstss;
+        private List<Models.TypesReq> types;
+        private List<Models.Priority> priorities;
+        private List<Models.Status> statuses;
+        private List<Models.User> us;
+        private List<Models.Suplier> supl;
+        private List<Models.HestoryReq> hesr;
+
+        protected override async Task OnParametersSetAsync()
+        {
+            hesr = db.HestoryReqs.ToList();
+            types = db.TypesReqs.ToList();
+            priorities = db.Priorities.ToList();
+            statuses = db.Statuses.ToList();
+            supl = db.Supliers.ToList();
+
+        }
+
+        private void MoveRequestToHistoryOnClick(HestoryReq selectedRequest)
+        {
+            if (selectedRequest != null)
+            {
+                MoveRequestToHistory(selectedRequest);
+            }
+        }
+
+        void MoveRequestToHistory(HestoryReq request)
+        {
+            var historyRequest = new Requrst
+            {
+                IdTypeReq = request.IdTypeReq,
+                IdPrior = request.IdPrior,
+                IdStatus = request.IdStatus,
+                IdUser = request.IdUser,
+                IdSupe = request.IdSupe,
+                Datee = request.Datee,
+                Comment = request.Comment
+            };
+
+            db.Reqursts.Add(historyRequest);
+            db.SaveChanges();
+
+            db.HestoryReqs.Remove(request);
+            db.SaveChanges();
+
+            hesr.Remove(request);
+
+            NavigationManager.NavigateTo("/arh");
+            InvokeAsync(StateHasChanged);
+        }
+
+        void UpdatePriority(HestoryReq request, string newPriorityId)
+        {
+            request.IdPrior = int.Parse(newPriorityId);
+            // Сохранить изменения в базе данных
+            db.SaveChanges();
+        }
+
+        void UpdateSup(HestoryReq request, string newSupId)
+        {
+            request.IdSupe = int.Parse(newSupId);
+            // Сохранить изменения в базе данных
+            db.SaveChanges();
+        }
+
+        void TimerElapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            InvokeAsync(StateHasChanged);
+        }
+        private string GetTypeName(int? id)
+        {
+            return types.FirstOrDefault(t => t.IdT == id)?.Name ?? "Unknown";
+        }
+
+        private string GetPriorityName(int? id)
+        {
+            return priorities.FirstOrDefault(p => p.IdPr == id)?.Name ?? "Unknown";
+        }
+
+        private string GetStatusName(int? id)
+        {
+            return statuses.FirstOrDefault(s => s.IdSt == id)?.Name ?? "Unknown";
+        }
+        private string GetUserName(int? userId)
+        {
+            var user = db.Users.FirstOrDefault(u => u.IdUs == userId);
+            return user != null ? user.Name : "Нет данных";
+        }
+
+        private string GetUserPhone(int? userId)
+        {
+            var user = db.Users.FirstOrDefault(u => u.IdUs == userId);
+            return user != null ? user.Phone : "Нет данных";
+        }
+
+        private string GetUserLocation(int? userId)
+        {
+            var user = db.Users.FirstOrDefault(u => u.IdUs == userId);
+            return user != null ? user.Laba : "Нет данных";
+        }
+        private string GetSupName(int? userId)
+        {
+            var user = db.Supliers.FirstOrDefault(u => u.IdSup == userId);
+            return user != null ? user.Login : "Нет данных";
+        }
+
+        private string GetPriorityClass(int id)
+        {
+            switch (id)
+            {
+                case 1: // Низкий приоритет
+                    return "low-priority";
+                case 2: // Средний приоритет
+                    return "medium-priority";
+                case 3: // Высокий приоритет
+                    return "high-priority";
+                default:
+                    return "";
+            }
+        }
+        void DeleteRequest(HestoryReq request)
+        {
+            // Удаление записи из базы данных
+            db.HestoryReqs.Remove(request);
+            db.SaveChanges();
+            // Удаление записи из списка, отображаемого в таблице
+            hesr.Remove(request);
+            // Обновление компонента
+            InvokeAsync(StateHasChanged);
+        }
+        string searchText = "";
+        string comment = "";
+        private string selectedPriority = "";
+        private string selectedStatus = "";
+        // Метод для выполнения поиска
+        private void Search()
+        {
+            // Перезагрузка данных поиска
+            StateHasChanged();
+        }
+        public int GetPriorityId(string priorityName)
+        {
+            switch (priorityName)
+            {
+                case "Низкий":
+                    return 1;
+                case "Средний":
+                    return 2;
+                case "Высокий":
+                    return 3;
+                default:
+                    return 0; // или другое значение по умолчанию, если приоритет не определен
+            }
+        }
+}
+    </Authorized>
+</AuthorizeView>

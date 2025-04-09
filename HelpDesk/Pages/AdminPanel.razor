@@ -1,0 +1,279 @@
+﻿@page "/panel"
+@inject NavigationManager NavigationManager
+@using HelpDesk.Models
+<div class="siva">
+<style>
+        .header22 {
+            font-size: 20px;
+            font-weight: normal;
+            font-family: Arial, sans-serif;
+            text-align: justify;
+            color: white;
+        }
+</style>
+
+<h1>Панель администратора</h1>
+<div>.</div>
+<div class="container">
+<div class="block red">
+    <h3>Всего заявок</h3>
+    <p>@reqursts.Count</p>
+            <button type="submit" class="button" @onclick="GoToCounterPage"><div class="header2">Перейти</div></button>
+</div>
+
+<div class="block white">
+    <h3>Выполнено заявок</h3>
+    <p>@reqursts.Count(req => req.IdStatus == 2)</p>
+            <button type="submit" class="button2" @onclick="GoToStatsPage"><div class=" header2">Перейти
+        </div></button>
+</div>
+<div class="block blue">
+    <h3>Текущее время</h3>
+    <p>@DateTime.Now.ToString("HH:mm:ss")</p>
+</div>
+</div>
+</div>
+<div>.</div>
+<div>.</div>
+<div>.</div>
+<div class="shadow">
+<h2>Все пользователи в системе</h2>
+<div>
+    <div>
+        <table class="table">
+            <tr>
+                <th class="header">№</th>
+                <th class="header">Логин</th>
+                <th class="header">Пароль</th>
+                <th class="header">Имя</th>
+                <th class="header">Телефон</th>
+                <th class="header">Расположение</th>
+                <th class="header">Удаление</th>
+            </tr>
+            @foreach (var user in users)
+            {
+                <tr>
+                    <td class="cell">@user.IdUs</td>
+                    <td class="cell">@user.Login</td>
+                    <td class="cell">@user.Password</td>
+                    <td class="cell">@user.Name</td>
+                    <td class="cell">@user.Phone</td>
+                    <td class="cell">@user.Laba</td>
+                        <td>
+                            <button  @onclick="() => DeleteRequest(user)">Удалить</button>
+                        </td>
+                </tr>
+            }
+        </table>
+    </div>
+    <div class="widh"></div>
+    <div>
+        <h2>Инженеры-рабочие</h2>
+        <table class="table">
+            <tr>
+                <th class="header">№</th>
+                <th class="header">Логин</th>
+                <th class="header">Пароль</th>
+                <th class="header">Удаление</th>
+            </tr>
+            @foreach (var supl in sup)
+            {
+                <tr>
+                    <td class="cell">@supl.IdSup</td>
+                    <td class="cell">@supl.Login</td>
+                    <td class="cell">@supl.Password</td>
+                    <td>
+                            <button @onclick="() => DeleteRequest2(supl)">Удалить</button>
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>
+</div>
+
+
+<style>
+    .container {
+        display: grid;
+        grid-template-columns: repeat(13, 2fr); /* Распределение на три колонки */
+        gap: 50px; /* Расстояние между блоками */
+        justify-items: left;
+    }
+    .button {
+        border: none;
+        outline: none;
+        outline: none;
+        background-position:left;
+        height:40px;
+        width: 230px;
+        background-color: #D55C49;  
+    }
+    .widh
+    {
+        width: 180px;
+    }
+    .siva
+    {
+        background-color:silver;
+        border-radius: 5px;
+        background-image: url('/images/mechel.png');
+        background-size: 50%;
+        background-position: right; /* Выравнивание изображения вверху справа */
+        background-repeat: no-repeat;
+    }
+    .button2 {
+        border: none;
+        outline: none;
+        outline: none;
+        background-position: left;
+        height: 40px;
+        width: 230px;
+        background-color: #00914E;
+    }
+
+    .button3 {
+        border: none;
+        outline: none;
+        outline: none;
+        background-position: left;
+        height: 40px;
+        width: 230px;
+        background-color: #01A9D0;
+    }
+
+    .button4 {
+        border: none;
+        outline: none;
+        outline: none;
+        background-position: left;
+        height: 40px;
+        width: 230px;
+        background-color: #00914E;
+    }
+    .blocks-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .block {
+        background-color: black;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        width: 240px;
+    }
+
+    .red {
+        background-color: #ED6652;
+        background-size: 30%;
+        background-position: top right; /* Выравнивание изображения вверху справа */
+        background-repeat: no-repeat;
+        background-image: url('/images/giving.png');
+        padding: 5px;
+    }
+    .silver
+    {
+        background-color: #FED6BC;
+        border-radius: 5px;
+        padding: 5px;
+    }
+
+    .green {
+        background-color: #EB9711;
+        padding: 5px;
+        background-size: 30%;
+        background-position: top right;
+        background-repeat: no-repeat;
+        background-image: url('/images/ending.webp');
+    }
+
+    .blue {
+        background-color: #00BBE8;
+        padding: 5px;
+        background-size: 30%;
+        background-position: top right;
+        background-repeat: no-repeat;
+        background-image: url('/images/clock.webp');
+    }
+
+    .white {
+        background-color: #00A056;
+        padding: 5px;
+        background-size: 30%;
+        background-position: top right;
+        background-repeat: no-repeat;
+        background-image: url('/images/ending.webp');
+    }
+
+    .block h3 {
+        font-size: 20px;
+        margin-top: 0;
+    }
+
+    .block p {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 0;
+    }
+
+    important-info {
+        flex: 1;
+        background-color: #f0f0f0; /* Нейтральный цвет */
+        padding: 120px;
+        margin-bottom: 120px;
+        border-radius: 5px;
+</style>
+
+@code {
+    System.Timers.Timer timer;
+    private List<Models.Requrst> reqursts;
+    List<Models.User> users;
+    List<Models.Suplier> sup;
+    Models.HelpDeskContext db = new Models.HelpDeskContext();
+
+    protected override void OnInitialized()
+    {
+        // Получение данных из базы данных
+        using (var db = new Models.HelpDeskContext())
+        {
+            reqursts = db.Reqursts.ToList();
+            users = db.Users.ToList();
+            sup = db.Supliers.ToList();
+            // Запуск таймера для обновления текущего времени каждую секунду
+            timer = new System.Timers.Timer(1000);
+            timer.Elapsed += (sender, e) => InvokeAsync(StateHasChanged);
+            timer.Start();
+        }
+    }
+
+    private void GoToCounterPage()
+    {
+        NavigationManager.NavigateTo("/counter");
+    }
+
+    private void GoToStatsPage()
+    {
+        NavigationManager.NavigateTo("/arh");
+    }
+    void DeleteRequest(User userss)
+    {
+        // Удаление записи из базы данных
+        db.Users.Remove(userss);
+        db.SaveChanges();
+        // Удаление записи из списка, отображаемого в таблице
+        users.Remove(userss);
+        // Обновление компонента
+        InvokeAsync(StateHasChanged);
+    }
+    void DeleteRequest2(Suplier ss)
+    {
+        // Удаление записи из базы данных
+        db.Supliers.Remove(ss);
+        db.SaveChanges();
+        // Удаление записи из списка, отображаемого в таблице
+        sup.Remove(ss);
+        // Обновление компонента
+        InvokeAsync(StateHasChanged);
+    }
+}

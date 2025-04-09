@@ -1,0 +1,99 @@
+is_global = true
+build_property.TargetFramework = net6.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = HelpDesk
+build_property.RootNamespace = HelpDesk
+build_property.ProjectDir = C:\Users\s4nshi\Desktop\С работы\HelpDesk\HelpDesk\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 6.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = C:\Users\s4nshi\Desktop\С работы\HelpDesk\HelpDesk
+build_property._RazorSourceGeneratorDebug = 
+
+[C:/Users/s4nshi/Desktop/С работы/HelpDesk/HelpDesk/App.razor]
+build_metadata.AdditionalFiles.TargetPath = QXBwLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/s4nshi/Desktop/С работы/HelpDesk/HelpDesk/Pages/Addreq.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRkcmVxLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/s4nshi/Desktop/С работы/HelpDesk/HelpDesk/Pages/AddSup.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRkU3VwLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/s4nshi/Desktop/С работы/HelpDesk/HelpDesk/Pages/AddUser.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRkVXNlci5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/s4nshi/Desktop/С работы/HelpDesk/HelpDesk/Pages/AdminPanel.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRtaW5QYW5lbC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/s4nshi/Desktop/С работы/HelpDesk/HelpDesk/Pages/Arhive.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQXJoaXZlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/s4nshi/Desktop/С работы/HelpDesk/HelpDesk/Pages/Index.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW5kZXgucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/s4nshi/Desktop/С работы/HelpDesk/HelpDesk/Pages/Login.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTG9naW4ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/s4nshi/Desktop/С работы/HelpDesk/HelpDesk/Pages/Взятые_заявки_инж.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNc0JLQt9GP0YLRi9C1X9C30LDRj9Cy0LrQuF/QuNC90LYucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/s4nshi/Desktop/С работы/HelpDesk/HelpDesk/Pages/Заявки_Админа.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNc0JfQsNGP0LLQutC4X9CQ0LTQvNC40L3QsC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/s4nshi/Desktop/С работы/HelpDesk/HelpDesk/Pages/Заявки_инженеруrazor.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNc0JfQsNGP0LLQutC4X9C40L3QttC10L3QtdGA0YNyYXpvci5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/s4nshi/Desktop/С работы/HelpDesk/HelpDesk/Pages/Заявки_Пользователю.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNc0JfQsNGP0LLQutC4X9Cf0L7Qu9GM0LfQvtCy0LDRgtC10LvRji5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/s4nshi/Desktop/С работы/HelpDesk/HelpDesk/Pages/Статистика.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNc0KHRgtCw0YLQuNGB0YLQuNC60LAucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/s4nshi/Desktop/С работы/HelpDesk/HelpDesk/Shared/SurveyPrompt.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXFN1cnZleVByb21wdC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/s4nshi/Desktop/С работы/HelpDesk/HelpDesk/_Imports.razor]
+build_metadata.AdditionalFiles.TargetPath = X0ltcG9ydHMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/s4nshi/Desktop/С работы/HelpDesk/HelpDesk/Shared/MainLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXE1haW5MYXlvdXQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-arey30uq7u
+
+[C:/Users/s4nshi/Desktop/С работы/HelpDesk/HelpDesk/Shared/NavMenu.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXE5hdk1lbnUucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-yzath3qbth
+
+[C:/Users/s4nshi/Desktop/С работы/HelpDesk/HelpDesk/Pages/Error.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRXJyb3IuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/s4nshi/Desktop/С работы/HelpDesk/HelpDesk/Pages/_Host.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX0hvc3QuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/s4nshi/Desktop/С работы/HelpDesk/HelpDesk/Pages/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX0xheW91dC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 

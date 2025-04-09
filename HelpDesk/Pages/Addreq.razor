@@ -1,0 +1,175 @@
+﻿@page "/addreq"
+@using HelpDesk.Authentication
+@using HelpDesk.Models
+@using Microsoft.EntityFrameworkCore
+@inject NavigationManager NavigationManager
+@inject IJSRuntime js
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@attribute [Authorize(Roles = "User")]
+
+<AuthorizeView>
+    <Authorized>
+<h3 class="header">Добавление новой заявки</h3>
+
+<form @onsubmit="SubmitForm">
+    <div class="form-group">
+        <label class="cell">Тип заявки</label>
+        <select class="form-control" @bind="selectedTypeId">
+            @foreach (var type in types)
+            {
+                <option value="@type.IdT">@type.Name</option>
+            }
+        </select>
+    </div>
+
+    <div class="form-group">
+           <label class="cell">ФИО отправителя</label>
+                <input type="text" class="form-control" placeholder="@context.User.Identity.Name" value="@UserName" readonly />
+    </div>
+
+    <div class="form-group">
+                <label class="cell">Телефон</label>
+                <input type="text" class="form-control" value="@UserNumber" readonly />
+    </div>
+
+    <div class="form-group">
+                <label class="cell">Расположение</label>
+                <input type="text" class="form-control" value="@UserLab" readonly />
+    </div>
+
+    <div class="form-group">
+        <label class="cell">Описание проблемы</label>
+        <textarea class="form-control" @bind="comment"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary"><div class="header2">Добавить</div></button>
+    <button type="button" class="btn btn-info" @onclick="ShowText"><div class="header2">У меня вопрос...</div></button>
+</form>
+
+
+@if (showText)
+{
+    <div class="alert alert-info mt-3">
+        Все вопросы к админу 4-16-52. Это сообщение исчезнет через 10 секунд!
+    </div>
+}
+
+
+        @code {
+            [CascadingParameter]
+             private Task<AuthenticationState> authenticationState { get; set; }
+
+    private User user;
+    private List<TypesReq> types = new List<TypesReq>();
+    private List<Priority> priorities = new List<Priority>();
+    private List<User> us = new List<User>();
+    private int selectedTypeId;
+    private int selectedPriorityId;
+    private string phone;
+    private string comment;
+    int userId;
+    Models.HelpDeskContext db = new Models.HelpDeskContext();
+    private string UserName { get; set; }
+    private string UserNumber { get; set; }
+    private string UserLab { get; set; }
+
+    protected override async Task OnInitializedAsync() //вывести ФИО авторизованного пользователя
+    {
+            var authState = await authenticationState;
+            var userName = authState.User.Identity.Name;
+
+            var user = db.Users.FirstOrDefault(u => u.Login == userName); //Получение IdUs
+            userId = user != null ? user.IdUs : 0;
+
+            UserName = await GetUserName(userId);
+            UserNumber = await GetUserNumber(userId);
+            UserLab = await GetUserLab(userId);
+    }
+
+    protected override void OnInitialized()
+    {
+            types = db.TypesReqs.ToList();
+            priorities = db.Priorities.ToList();
+
+    }
+
+        private async Task<string> GetUserName(int? userId) //метод поиска ФИО по логину
+        {
+            var authState = await authenticationState;
+            var userName = authState.User.Identity.Name;
+
+            var user = db.Users.FirstOrDefault(u => u.Login == userName);
+
+            return user != null ? user.Name : "Нет данных";
+        }
+
+        private async Task<string> GetUserNumber(int? userId) //метод поиска Номера по логину
+        {
+            var authState = await authenticationState;
+            var userName = authState.User.Identity.Name;
+
+            var user = db.Users.FirstOrDefault(u => u.Login == userName);
+
+            return user != null ? user.Phone : "Нет данных";
+        }
+
+        private async Task<string> GetUserLab(int? userId) //метод поиска Расположения по логину
+        {
+            var authState = await authenticationState;
+            var userName = authState.User.Identity.Name;
+
+            var user = db.Users.FirstOrDefault(u => u.Login == userName);
+
+            return user != null ? user.Laba : "Нет данных";
+        }
+
+        private async Task SubmitForm()
+    {
+        if (selectedTypeId == 0)
+        {
+                await js.InvokeVoidAsync("alert", "Выберите тип заявки, чтобы добавить её!");
+                return;
+                return;
+        }
+        var newRequest = new Requrst
+            {
+                IdTypeReq = selectedTypeId,
+                IdStatus = 1,
+                IdPrior = 4,
+                IdUser = userId,
+                IdSupe = null,
+                Datee = DateTime.Now,
+                Comment = comment
+            };
+
+        // Сохранение новой заявки в базе данных
+        db.Reqursts.Add(newRequest);
+        db.SaveChanges();
+        NavigationManager.NavigateTo("/requser");
+            await js.InvokeVoidAsync("alert", "Заявка успешно создана!");
+            return;
+    }
+
+    private void Cancel()
+    {
+        NavigationManager.NavigateTo("");
+    }
+    private bool showText = false;
+    private bool showSuccessMessage = false;
+
+    private void ShowText()
+    {
+        showText = !showText;
+        if (showText)
+        {
+            System.Threading.Timer timer = new System.Threading.Timer((e) =>
+            {
+                showText = false;
+                InvokeAsync(StateHasChanged);
+            }, null, 10000, System.Threading.Timeout.Infinite);
+        }
+    }
+}
+    </Authorized>
+</AuthorizeView>

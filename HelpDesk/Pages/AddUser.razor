@@ -1,0 +1,70 @@
+﻿@page "/addus"
+@inject NavigationManager NavigationManager
+@using HelpDesk.Models
+@using Microsoft.EntityFrameworkCore
+
+<h1>Добавление пользователя</h1>
+
+<form @onsubmit="AddUserr">
+    <div class="form-group">
+        <label class="cell">Логин</label>
+        <input type="text" class="form-control" @bind="login" />
+    </div>
+
+    <div class="form-group">
+        <label class="cell">Пароль</label>
+        <input type="text" class="form-control" @bind="password" />
+    </div>
+
+    <div class="form-group">
+        <label class="cell">ФИО</label>
+        <input type="text" class="form-control" @bind="name"/>
+    </div>
+    <div class="form-group">
+        <label class="cell">Телефон</label>
+        <input type="text" class="form-control" @bind="phone" />
+    </div>
+    <div class="form-group">
+        <label class="cell">Расположение</label>
+        <input type="text" class="form-control" @bind="laba" />
+    </div>
+
+    <button type="submit" class="btn btn-primary"><div class="header2">Добавить</div></button>
+    <button type="button" class="btn btn-secondary" @onclick="Cancel"><div class="header2">Отмена</div></button>
+</form>
+
+@code {
+    private Models.User user = new Models.User();
+    Models.HelpDeskContext db = new Models.HelpDeskContext();
+    private string login;
+    private string password;
+    private string name;
+    private string phone;
+    private string laba;
+
+    protected override void OnInitialized()
+    {
+    }
+
+    private async Task AddUserr()
+    {
+        var newUser = new User
+            {
+                Login = login,
+                Password = password,
+                Name = name,
+                Phone = phone,
+                Laba = laba
+            };
+
+        // Сохранение новой заявки в базе данных
+        db.Users.Add(newUser);
+        db.SaveChanges();
+        NavigationManager.NavigateTo("/panel");
+    }
+
+    private void Cancel()
+    {
+        NavigationManager.NavigateTo("/panel");
+    }
+}

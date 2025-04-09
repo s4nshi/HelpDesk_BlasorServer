@@ -1,0 +1,117 @@
+﻿@page "/fetchdata"
+@using System.Linq
+@using HelpDesk.Models
+<div class="header2">
+        <div class="siva">
+        <h1>Статистика заявок</h1>
+    <p>Общее количество заявок: @totalRequests</p>
+    <p>Количество заявок в архиве: @totalArchivedRequests</p>
+    </div>
+    <div class="shadow">
+        <div style="display: flex;">
+            <div style="flex: 1;">
+                <ul>
+                    <p>Статистика по типам заявок:</p>
+                    @foreach (var typeWithCount in types)
+                    {
+                        <li class="cell2">@typeWithCount.Name: @typeWithCount.IdT </li>
+                    }
+                </ul>
+            </div>
+
+            <div style="flex: 1;">
+                <ul>
+                    <p>Количество заявок на каждого рабочего:</p>
+                    @foreach (var worker in GetRequestCountForWorker())
+                    {
+                        <li class="cell2">
+                            @worker.Item1 - @worker.Item2
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .cell2 {
+        font-size: 20px; /* Размер шрифта для ячеек */
+        font-weight: normal;
+        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif, sans-serif; /* Шрифт для ячеек */
+    }
+
+    .siva {
+        background-color: silver;
+        border-radius: 5px;
+        background-image: url('/images/mechel.png');
+        background-size: 30%;
+        background-position: right; /* Выравнивание изображения вверху справа */
+        background-repeat: no-repeat;
+    }
+</style>
+
+@code {
+    List<TypesReq> types = new List<TypesReq>();
+    List<Priority> priorities = new List<Priority>();
+    List<Requrst> reqursts = new List<Requrst>();
+    Models.HelpDeskContext db = new Models.HelpDeskContext();
+    List<Suplier> workerss = new List<Suplier>();
+    int totalRequests = 0;
+    int totalArchivedRequests = 0;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Здесь вызовите методы для получения статистики из базы данных
+        totalRequests = GetTotalRequests();
+        totalArchivedRequests = GetTotalArchivedRequests();
+        types = GetRequestsByType();
+        workerss = db.Supliers.ToList();
+    }
+
+    private int GetTotalRequests()
+    {
+        // Реализуйте логику для получения общего количества заявок из таблицы Request
+        return db.Reqursts.Count();
+    }
+
+    private int GetTotalArchivedRequests()
+    {
+        // Реализуйте логику для получения количества заявок в архиве из таблицы HistoryReq
+        return db.HestoryReqs.Count();
+    }
+    private List<TypesReq> GetRequestsByType()
+    {
+        var types = db.TypesReqs.ToList();
+        var result = new List<TypesReq>();
+
+        foreach (var type in types)
+        {
+            var count = db.Reqursts.Count(r => r.IdTypeReq == type.IdT);
+            var typeWithCount = new TypesReq
+                {
+                    IdT = type.IdT,
+                    Name = type.Name
+                };
+            typeWithCount.IdT = count; // Добавляем количество заявок как дополнительное свойство
+            result.Add(typeWithCount);
+
+        }
+
+        return result;
+    }
+    private List<(string, int)> GetRequestCountForWorker()
+    {
+        var requestCounts = new List<(string, int)>();
+
+
+        foreach (var workere in workerss)
+        {
+            var requestsForWorker = db.Reqursts.Where(r => r.IdSupe == workere.IdSup).ToList();
+            requestCounts.Add((workere.Login, requestsForWorker.Count));
+        }
+
+        return requestCounts;
+    }
+}

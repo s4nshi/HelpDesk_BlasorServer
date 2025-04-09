@@ -1,0 +1,47 @@
+﻿@using HelpDesk.Authentication
+@inherits LayoutComponentBase
+@inject AuthenticationStateProvider authStateProvider
+@inject NavigationManager navManager
+@inject IJSRuntime js
+
+<PageTitle>HelpDesk</PageTitle>
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <div class="top-row px-3">
+            <AuthorizeView>
+                <Authorized>
+                    <a @onclick="Logout" href="javascript:void(0)">Выйти</a>
+                </Authorized>
+                <NotAuthorized>
+                    <button class="btn btn-primary" @onclick="Question">?</button>
+                </NotAuthorized>
+            </AuthorizeView>
+        </div>
+
+        <article class="content px-3">
+            @Body
+        </article>
+    </main>
+</div>
+
+@code {
+    private async Task Logout()
+    {
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        await customAuthStateProvider.UpdateAuthenticationState(null);
+        navManager.NavigateTo("/", true);
+
+
+    }
+
+    public async Task Question()
+    {
+        await js.InvokeVoidAsync("alert", "Если у вас возники трудности или вопросы с авторизацией, \nто вы можете позвонить программистам по номеру: 4-16-53");
+        return;
+    }
+}

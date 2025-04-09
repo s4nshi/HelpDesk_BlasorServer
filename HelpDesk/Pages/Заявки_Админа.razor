@@ -1,0 +1,280 @@
+﻿@using System.Net
+@using HelpDesk.Models
+@inject NavigationManager NavigationManager
+@attribute [Authorize(Roles = "Administrator")]
+
+@page "/counter"
+<AuthorizeView>
+    <Authorized>
+        <h1>Заявки</h1>
+        <input class="cell" type="text" @bind="comment" placeholder="Поиск..." /> @*Поиск по имени*@
+        <select class="cell" @bind="selectedPriority">
+            <option value=""><div class="cell">Все приоритеты</div></option>
+            <option value="Низкий"><div class="cell">Низкий</div></option>
+            <option value="Средний"><div class="cell">Средний</div></option>
+            <option value="Высокий"><div class="cell">Высокий</div></option>
+        </select>
+
+        <select class="cell" @bind="selectedStatus">
+            <option value=""><div class="cell">Все статусы</div></option>
+            <option value="В работе"><div class="cell">В работе</div></option>
+            <option value="Закрыто"><div class="cell">Закрыто</div></option>
+        </select>
+
+        <div>
+            .
+        </div>
+        <table id="myTable2" class="table">
+            <thead>
+                <tr>
+                    <th class="header">№</th>
+                    <th class="header">Тип</th>
+                    <th class="header">Приоритет</th>
+                    <th class="header">Статус</th>
+                    <th class="header">ФИО отправителя</th>
+                    <th class="header">Телефон</th>
+                    <th class="header">Расположение</th>
+                    <th class="header">Выполняющий заявку</th>
+                    <th class="header">Дата</th>
+                    <th class="header">Описание проблемы</th>
+                    <th class="header">Добавить в архив</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var req in requrstss.Where(req =>
+                (string.IsNullOrEmpty(comment) || req.Comment.Contains(comment)) &&
+                (string.IsNullOrEmpty(selectedPriority) || GetPriorityId(selectedPriority) == req.IdPrior) &&
+                (string.IsNullOrEmpty(selectedStatus) || statuses.FirstOrDefault(s => s.IdSt == req.IdStatus)?.Name == selectedStatus)
+                ))
+                {
+                    string priorityColor = "";
+                    switch (req.IdPrior)
+                    {
+                        case 1:
+                            priorityColor = "green";
+                            break;
+                        case 2:
+                            priorityColor = "orange";
+                            break;
+                        case 3:
+                            priorityColor = "red";
+                            break;
+                    }
+                    <tr>
+
+                        <td class="cell">@req.IdReq</td>
+                        <td class="cell">@GetTypeName(req.IdTypeReq)</td>
+                        <td style="background-color: @priorityColor;" class="cell">
+                            <select style="background-color: @priorityColor;" @onchange="@(e => UpdatePriority(req, e.Value.ToString()))">
+                                @foreach (var priority in priorities)
+                                {
+                                    <option value="@priority.IdPr" selected="@(req.IdPrior == priority.IdPr ? "selected" : null)">@priority.Name</option>
+                                }
+                            </select>
+                        </td>
+                        <td class="cell">@GetStatusName(req.IdStatus)</td>
+                        <td class="cell">@GetUserName(req.IdUser)</td>
+                        <td class="cell">@GetUserPhone(req.IdUser)</td>
+                        <td class="cell">@GetUserLocation(req.IdUser)</td>
+                        <td class="cell">
+                            <select @onchange="@(e => UpdateSup(req, e.Value.ToString()))">
+                                <option value="" selected>Нет данных</option>
+                                @foreach (var supe in supl)
+                                {
+                                    <option value="@supe.IdSup" selected="@(req.IdSupe == supe.IdSup ? "selected" : null)">@supe.Login</option>
+                                }
+                            </select>
+                        </td>
+                        @if (req.Datee.HasValue)
+                        {
+                            <td class="cell">@req.Datee.Value.ToString("dd:MM:yyyy")</td>
+                        }
+                        else
+                        {
+                            <td class="cell">Без даты</td>
+                        }
+                        <td class="cell">@req.Comment</td>
+                        <td>
+                            @for (int i = 0; i < requrstss.Count; i++)
+                            {
+                                var request = requrstss[i];
+                            }
+                            <button class="btn btn-primary" @onclick="() => MoveRequestToHistoryOnClick(req)">Архивация</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+
+        @code {
+            Models.HelpDeskContext db = new Models.HelpDeskContext();
+        private List<Models.Requrst> requrstss;
+        private List<Models.TypesReq> types;
+        private List<Models.Priority> priorities;
+        private List<Models.Status> statuses;
+        private List<Models.User> us;
+        private List<Models.Suplier> supl;
+        private List<Models.HestoryReq> hs;
+
+        protected override async Task OnParametersSetAsync()
+        {
+            requrstss = db.Reqursts.ToList();
+            types = db.TypesReqs.ToList();
+            priorities = db.Priorities.ToList();
+            statuses = db.Statuses.ToList();
+            supl = db.Supliers.ToList();
+
+        }
+
+        public List<Requrst> Requests { get; set; } = new List<Requrst>();
+        public List<HestoryReq> ArchivedRequests { get; set; } = new List<HestoryReq>();
+
+        private void MoveRequestToHistoryOnClick(Requrst selectedRequest)
+        {
+            if (selectedRequest != null)
+            {
+                MoveRequestToHistory(selectedRequest);
+            }
+        }
+
+        void MoveRequestToHistory(Requrst request)
+        {
+            var historyRequest = new HestoryReq
+            {
+                IdTypeReq = request.IdTypeReq, 
+                IdPrior = request.IdPrior,
+                IdStatus = request.IdStatus,
+                IdUser = request.IdUser,
+                IdSupe = request.IdSupe,
+                Datee = request.Datee,
+                Comment = request.Comment
+            };
+
+            db.HestoryReqs.Add(historyRequest);
+            db.SaveChanges();
+
+            db.Reqursts.Remove(request);
+            db.SaveChanges();
+
+            requrstss.Remove(request);
+
+            InvokeAsync(StateHasChanged);
+        }
+
+        List<Priority> prioritiess = new List<Priority>(); // Предположим, что у вас есть список приоритетов
+
+        void UpdatePriority(Requrst request, string newPriorityId)
+        {
+            request.IdPrior = int.Parse(newPriorityId);
+            // Сохранить изменения в базе данных
+            db.SaveChanges();
+        }
+
+        void UpdateSup(Requrst request, string newSupId)
+        {
+            if (string.IsNullOrEmpty(newSupId))
+            {
+                request.IdSupe = null; // или другое значение по умолчанию
+            }
+            else
+            {
+                request.IdSupe = int.Parse(newSupId);
+            }
+
+            // Сохранить изменения в базе данных
+            db.SaveChanges();
+        }
+        void TimerElapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            InvokeAsync(StateHasChanged);
+        }
+        private string GetTypeName(int? id)
+        {
+            return types.FirstOrDefault(t => t.IdT == id)?.Name ?? "Unknown";
+        }
+
+        private string GetPriorityName(int? id)
+        {
+            return priorities.FirstOrDefault(p => p.IdPr == id)?.Name ?? "Unknown";
+        }
+
+        private string GetStatusName(int? id)
+        {
+            return statuses.FirstOrDefault(s => s.IdSt == id)?.Name ?? "Unknown";
+        }
+        private string GetUserName(int? userId)
+        {
+            var user = db.Users.FirstOrDefault(u => u.IdUs == userId);
+            return user != null ? user.Name : "Нет данных";
+        }
+
+        private string GetUserPhone(int? userId)
+        {
+            var user = db.Users.FirstOrDefault(u => u.IdUs == userId);
+            return user != null ? user.Phone : "Нет данных";
+        }
+
+        private string GetUserLocation(int? userId)
+        {
+            var user = db.Users.FirstOrDefault(u => u.IdUs == userId);
+            return user != null ? user.Laba : "Нет данных";
+        }
+        private string GetSupName(int? userId)
+        {
+            var user = db.Supliers.FirstOrDefault(u => u.IdSup == userId);
+            return user != null ? user.Login : "Нет данных";
+        }
+
+        private string GetPriorityClass(int id)
+        {
+            switch (id)
+            {
+                case 1: // Низкий приоритет
+                    return "low-priority";
+                case 2: // Средний приоритет
+                    return "medium-priority";
+                case 3: // Высокий приоритет
+                    return "high-priority";
+                default:
+                    return "";
+            }
+        }
+        void DeleteRequest(Requrst request)
+        {
+            // Удаление записи из базы данных
+            db.Reqursts.Remove(request);
+            db.SaveChanges();
+            // Удаление записи из списка, отображаемого в таблице
+            requrstss.Remove(request);
+            // Обновление компонента
+            NavigationManager.NavigateTo("/counter");
+            InvokeAsync(StateHasChanged);
+        }
+        string searchText = "";
+        string comment = "";
+        private string selectedPriority = "";
+        private string selectedStatus = "";
+        // Метод для выполнения поиска
+        private void Search()
+        {
+            // Перезагрузка данных поиска
+            StateHasChanged();
+        }
+        public int GetPriorityId(string priorityName)
+        {
+            switch (priorityName)
+            {
+                case "Низкий":
+                    return 1;
+                case "Средний":
+                    return 2;
+                case "Высокий":
+                    return 3;
+                default:
+                    return 0; // или другое значение по умолчанию, если приоритет не определен
+            }
+        }
+}
+    </Authorized>
+</AuthorizeView>
